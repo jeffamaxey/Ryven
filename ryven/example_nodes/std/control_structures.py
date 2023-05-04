@@ -76,11 +76,9 @@ class ForLoop_Node(CSNodeBase):
 
     def rebuild_remove_actions(self):
 
-        remove_keys = []
-        for k, v in self.actions.items():
-            if k.startswith('remove dimension'):
-                remove_keys.append(k)
-
+        remove_keys = [
+            k for k, v in self.actions.items() if k.startswith('remove dimension')
+        ]
         for k in remove_keys:
             del self.actions[k]
 

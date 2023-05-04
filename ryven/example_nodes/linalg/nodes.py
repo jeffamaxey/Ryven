@@ -70,7 +70,12 @@ class Matrix_Node(Node):
         lines = s.splitlines()
         # the list(filter(...)) creates an array of strings for every line
         try:
-            self.expression_matrix = np.array([[exp for exp in list(filter(lambda s: s != '', l.split(' ')))] for l in lines])
+            self.expression_matrix = np.array(
+                [
+                    list(list(filter(lambda s: s != '', l.split(' '))))
+                    for l in lines
+                ]
+            )
             self.eval_expression_matrix()
             self.update()
         except ValueError:
@@ -145,9 +150,10 @@ class Matrix_Node(Node):
         if expression_matrix_list is not None:  # ndarrays are not json serializaple
             expression_matrix_list = expression_matrix_list.tolist()
 
-        data = {'main widget hidden': self.main_widget_hidden,
-                'expression matrix': expression_matrix_list}
-        return data
+        return {
+            'main widget hidden': self.main_widget_hidden,
+            'expression matrix': expression_matrix_list,
+        }
 
     def set_state(self, data, version):
         if self.session.gui:
@@ -333,8 +339,7 @@ class RandomMatrix(MatrixNodeBase):
     ]
 
     def get_mat(self):
-        m = np.random.rand(self.input(0), self.input(1))
-        return m
+        return np.random.rand(self.input(0), self.input(1))
 
 
 class SolveLEq(MatrixNodeBase):

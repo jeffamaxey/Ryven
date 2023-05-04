@@ -129,8 +129,7 @@ class CodePreviewWidget(QWidget):
                 }
 
             for i in range(len(node.inputs)):
-                iw = node.item.inputs[i].widget
-                if iw:
+                if iw := node.item.inputs[i].widget:
                     # find code
                     code = ''
                     for name, cls in node.input_widget_classes.items():
@@ -167,9 +166,7 @@ class CodePreviewWidget(QWidget):
         self.current_obj = obj
 
         orig = self.codes[node][obj]['original cls']
-        modf = self.codes[node][obj]['modified cls']
-
-        if modf:
+        if modf := self.codes[node][obj]['modified cls']:
             code = modf
             self.reset_code_button.setEnabled(True)
         else:
@@ -195,7 +192,7 @@ class CodePreviewWidget(QWidget):
     def clear_class_layout(self):
 
         # clear layout
-        for i in range(self.class_selection_layout.count()):
+        for _ in range(self.class_selection_layout.count()):
             item = self.class_selection_layout.itemAt(0)
             widget = item.widget()
             widget.hide()
@@ -211,12 +208,12 @@ class CodePreviewWidget(QWidget):
                 # o.setStyleSheet('color: #3B9CD9;')
                 f = b.font()
                 f.setBold(True)
-                b.setFont(f)
             else:
                 # o.setStyleSheet('color: white;')
                 f = b.font()
                 f.setBold(False)
-                b.setFont(f)
+
+            b.setFont(f)
 
     def class_RB_toggled(self, checked):
         if checked:

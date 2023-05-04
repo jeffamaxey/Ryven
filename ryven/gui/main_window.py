@@ -193,9 +193,8 @@ CONTROLS
     def load_stylesheet(self, ss):
         ss_content = ''
         try:
-            f = open(abs_path_from_package_dir('resources/stylesheets/' + ss + '.txt'))
-            ss_content = f.read()
-            f.close()
+            with open(abs_path_from_package_dir(f'resources/stylesheets/{ss}.txt')) as f:
+                ss_content = f.read()
         finally:
             self.session.set_stylesheet(ss_content)
             self.setStyleSheet(ss_content)
@@ -219,10 +218,7 @@ CONTROLS
             self.session.design.set_performance_mode('pretty')
 
     def on_animation_enabling_changed(self, action):
-        if action == self.ac_anims_active:
-            self.session.design.animations_enabled = True
-        else:
-            self.session.design.animations_enabled = False
+        self.session.design.animations_enabled = action == self.ac_anims_active
 
     def on_design_action_triggered(self):
         index = self.flow_view_theme_actions.index(self.sender())
@@ -325,11 +321,7 @@ CONTROLS
 
     def import_nodes(self, package: NodesPackage = None, path: str = None):
 
-        if package is not None:
-            p = package
-        else:
-            p = NodesPackage(path)
-
+        p = package if package is not None else NodesPackage(path)
         try:
             nodes = import_nodes_package(p)
         except ModuleNotFoundError as e:
@@ -361,16 +353,13 @@ CONTROLS
 
         scripts_data = self.session.serialize()
 
-        required_packages = set()
-        for node in self.session.all_node_objects():
-            if node.__class__ not in self.node_packages.keys() or \
-                    self.node_packages[node.__class__] is None or \
-                    self.node_packages[node.__class__].name == 'built_in':
-                continue
-            required_packages.add(
-                self.node_packages[node.__class__]
-            )
-
+        required_packages = {
+            self.node_packages[node.__class__]
+            for node in self.session.all_node_objects()
+            if node.__class__ in self.node_packages.keys()
+            and self.node_packages[node.__class__] is not None
+            and self.node_packages[node.__class__].name != 'built_in'
+        }
         whole_project_dict = {'general info': general_project_info_dict,
                               'required packages': [p.config_data() for p in required_packages],
                               **scripts_data}

@@ -13,12 +13,11 @@ def find_builtin_modules():
 
     std_lib = sysconfig.get_python_lib(standard_lib=True)
     for top, dirs, files in os.walk(std_lib):
-        for nm in files:
-            # if nm == '__init__.py':
-            #     mods.append(os.path.basename(os.path.normpath(top)))
-            if nm != '__init__.py' and nm[-3:] == '.py':
-                mods.append(os.path.join(top, nm)[len(std_lib) + 1:-3].replace(os.sep, '.'))
-
+        mods.extend(
+            os.path.join(top, nm)[len(std_lib) + 1 : -3].replace(os.sep, '.')
+            for nm in files
+            if nm != '__init__.py' and nm[-3:] == '.py'
+        )
     return mods
 
 def get_nodes(package_file: str) -> list:
@@ -33,9 +32,7 @@ def get_nodes(package_file: str) -> list:
         mod = __import__('nodes')
         sys.path.remove(os.path.dirname(package_file))
 
-        for node_name in package['nodes']:
-            nodes.append(mod.__dict__[node_name])
-    
+        nodes.extend(mod.__dict__[node_name] for node_name in package['nodes'])
     return nodes
 
 
@@ -46,11 +43,11 @@ def parse_module(mod_name: str, color: str, target_path: str):
     except ImportError:
         return
 
-    routines = []
-
-    for name, obj in inspect.getmembers(module):
-        if inspect.isroutine(obj):
-            routines.append((name, obj))
+    routines = [
+        (name, obj)
+        for name, obj in inspect.getmembers(module)
+        if inspect.isroutine(obj)
+    ]
     # print(routines)
     node_defs = []
 
@@ -134,7 +131,7 @@ class {node_name}(NodeBase):
     if not os.path.exists(target_path):
         os.mkdir(target_path)
 
-    with open(target_path+'/nodes.py', 'w') as f:
+    with open(f'{target_path}/nodes.py', 'w') as f:
         f.write('''
 from ryven.NENV import *
 
@@ -158,8 +155,8 @@ export_nodes(
     }
 
     try:
-        print(target_path+'/'+mod_name+'.rpc')
-        os.remove(target_path+'/'+mod_name+'.rpc')
+        print(f'{target_path}/{mod_name}.rpc')
+        os.remove(f'{target_path}/{mod_name}.rpc')
     except OSError:
         pass
 

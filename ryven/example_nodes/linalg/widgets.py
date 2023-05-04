@@ -59,10 +59,7 @@ QTextEdit{
                 if nlxl > longest_exp_length:
                     longest_exp_length = nlxl
 
-            for row in matrix:
-                lines.append(self.format_row_to_str(row, longest_exp_length))
-
-
+            lines.extend(self.format_row_to_str(row, longest_exp_length) for row in matrix)
         s = '\n'.join(lines)
         self.setText(s)
         self.resize_to_content(lines)
@@ -73,9 +70,8 @@ QTextEdit{
             if type(exp) == str:
                 if len(exp) > longest_exp_length:
                     longest_exp_length = len(exp)
-            else:
-                if len(str(exp)) > longest_exp_length:  # round(number, 4)
-                    longest_exp_length = len(str(exp))
+            elif len(str(exp)) > longest_exp_length:  # round(number, 4)
+                longest_exp_length = len(str(exp))
         return longest_exp_length
 
     def format_row_to_str(self, row, lxl):
@@ -108,10 +104,7 @@ QTextEdit{
 
 
     def get_state(self):
-        data = {'text': self.toPlainText(),
-                'shown': self.hidden_size is None
-                }
-        return data
+        return {'text': self.toPlainText(), 'shown': self.hidden_size is None}
 
     def set_state(self, data):
         self.setText(data['text'])

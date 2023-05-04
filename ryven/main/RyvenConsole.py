@@ -126,9 +126,8 @@ def import_nodes(session, context_container):
 def load_project(session, context_container):
     project_file_path = next_input('abs path to your project file: ')
     try:
-        f = open(project_file_path, 'r')
-        project = json.loads(f.read())
-        f.close()
+        with open(project_file_path, 'r') as f:
+            project = json.loads(f.read())
         del f
         scripts = session.load(project)
         print(f'added scripts: {scripts}')

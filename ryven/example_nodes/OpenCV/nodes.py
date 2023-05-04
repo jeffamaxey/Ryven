@@ -55,8 +55,7 @@ class ReadImage(NodeBase):
             print(e)
 
     def get_state(self):
-        data = {'image file path': self.image_filepath}
-        return data
+        return {'image file path': self.image_filepath}
 
     def set_state(self, data, version):
         self.path_chosen(data['image file path'])
@@ -106,7 +105,7 @@ class SaveImg(NodeBase):
         self.actions['make executable'] = {'method': self.action_make_executable}
 
     def update_event(self, inp=-1):
-        if not self.active or (self.active and inp == 0):
+        if not self.active or inp == 0:
             CVImage(cv2.imwrite(self.file_path, self.input(0).img))
 
     def get_state(self):
@@ -189,8 +188,7 @@ class CustomOpenCV(OpenCVNodeBase):
     def get_img(self):
         d = {**locals(), 'img': None}
         exec(self.code, d)
-        img = d['img']
-        return img
+        return d['img']
 
     def get_state(self) -> dict:
         return {
@@ -893,11 +891,7 @@ class Rotate(OpenCVNodeBase):
         height, width = img.shape[:2]
 
         angle = self.input(1)
-        if self.input(2) is None:
-            point = (width // 2, height / 2)
-        else:
-            point = self.input(2)
-
+        point = (width // 2, height / 2) if self.input(2) is None else self.input(2)
         rot_mat = cv2.getRotationMatrix2D(point, angle, 1.0)
 
         return cv2.warpAffine(

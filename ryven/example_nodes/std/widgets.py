@@ -158,8 +158,7 @@ class ConsoleInpLineEdit(QLineEdit):
                 ccp = self.cursorPosition()
                 text_left = self.text()[:ccp]
                 text_right = self.text()[ccp:]
-                ends_with_tab = re.match(r"(.*)\s\s\s\s$", text_left)
-                if ends_with_tab:
+                if ends_with_tab := re.match(r"(.*)\s\s\s\s$", text_left):
                     self.setText(text_left[:-4]+text_right)
                     self.setCursorPosition(ccp-4)
                     return True

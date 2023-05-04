@@ -157,12 +157,7 @@ class SelectPackages_Dialog(QDialog):
 
         selected_packages = [basename(normpath(np.directory)) for np in self.packages]
 
-        # search for missing packages
-        for p in self.required_packages:
-            if p not in selected_packages:
-                return False
-
-        return True
+        return all(p in selected_packages for p in self.required_packages)
 
     def finished(self):
         self.accept()

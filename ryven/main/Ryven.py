@@ -75,22 +75,21 @@ def run(qt_app=None, qt_api='pyside2',
     editor = MainWindow(editor_init_config, window_title, window_theme, flow_theme, parent=gui_parent)
     editor.show()
 
-    if qt_app is None:
-        if redirect_console_output:  # redirect console output
-            from contextlib import redirect_stdout, redirect_stderr
+    if qt_app is not None:
+        return editor
+    if redirect_console_output:  # redirect console output
+        from contextlib import redirect_stdout, redirect_stderr
 
-            with redirect_stdout(console_stdout_redirect), \
-                    redirect_stderr(console_errout_redirect):
+        with redirect_stdout(console_stdout_redirect), \
+                redirect_stderr(console_errout_redirect):
 
-                # run
-                editor.print_info()
-                sys.exit(app.exec_())
-        else:
             # run
             editor.print_info()
             sys.exit(app.exec_())
     else:
-        return editor
+        # run
+        editor.print_info()
+        sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
