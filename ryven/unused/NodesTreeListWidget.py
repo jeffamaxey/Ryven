@@ -51,7 +51,7 @@ class NodesTreeListWidget(QWidget):
 
         packages = {}  # {NodePackage: [Node]}
         for node, node_package in self.main_window.node_packages.items():
-            if node_package in packages.keys():
+            if node_package in packages:
                 packages[node_package].append(node)
             else:
                 packages[node_package] = [node]

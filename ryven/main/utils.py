@@ -17,13 +17,7 @@ def load_from_file(file: str = None, components_list: [str] = []) -> tuple:
     importlib.util.module_from_spec(spec)
 
     mod = spec.loader.load_module(name)
-    # using load_module(name) instead of exec_module(mod) here,
-    # because exec_module() somehow then registers it as "built-in"
-    # which is wrong and prevents inspect from parsing the source
-
-    comps = tuple([getattr(mod, c) for c in components_list])
-
-    return comps
+    return tuple(getattr(mod, c) for c in components_list)
 
 
 def import_nodes_package(package: NodesPackage = None, directory: str = None) -> list:
@@ -84,7 +78,7 @@ def import_nodes_package(package: NodesPackage = None, directory: str = None) ->
 
     for n in nodes:
         n.identifier_prefix = package.name  #  + '.' + (n.identifier if n.identifier else n.__name__)
-        n.type_ = package.name if not n.type_ else package.name+f'[{n.type_}]'
+        n.type_ = f'{package.name}[{n.type_}]' if n.type_ else package.name
 
     return nodes
 

@@ -97,7 +97,7 @@ class MainConsole(QWidget):
         new_context = {name: context_obj}
         context = {**old_context, **new_context}  # merge dicts
         self.interp = code.InteractiveConsole(context)
-        print('added as ' + name)
+        print(f'added as {name}')
 
         self.num_added_object_contexts += 1
 
@@ -143,9 +143,7 @@ class MainConsole(QWidget):
 
             # merge commands
             source = '\n'.join(self.buffer)
-            more = self.interp.runsource(source, '<console>')
-
-            if more:
+            if more := self.interp.runsource(source, '<console>'):
                 # self.setprompt('> ')
                 if self.prompt_label.isHidden():
                     self.prompt_label.show()
@@ -154,7 +152,7 @@ class MainConsole(QWidget):
                 leading_space = re.match(r"\s*", self.buffer[-1]).group()
                 self.inpedit.next_line = leading_space
 
-            else:   # no more input required
+            else:
                 self.prompt_label.hide()
                 self.buffer = []  # reset buffer
 
@@ -211,9 +209,7 @@ class ConsoleInputLineEdit(QLineEdit):
                 tl = self.text()[:ccp]
                 tr = self.text()[ccp:]
 
-                ends_with_tab = re.match(r"(.*)\s\s\s\s$", tl)
-
-                if ends_with_tab:
+                if ends_with_tab := re.match(r"(.*)\s\s\s\s$", tl):
                     self.setText(tl[:-4]+tr)
                     self.setCursorPosition(ccp-4)
                     return True

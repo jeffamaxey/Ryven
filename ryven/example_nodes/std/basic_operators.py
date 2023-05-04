@@ -49,11 +49,9 @@ class OperatorNodeBase(Node):
 
     def rebuild_remove_actions(self):
 
-        remove_keys = []
-        for k, v in self.actions.items():
-            if k.startswith('remove input'):
-                remove_keys.append(k)
-
+        remove_keys = [
+            k for k, v in self.actions.items() if k.startswith('remove input')
+        ]
         for k in remove_keys:
             del self.actions[k]
 
@@ -77,7 +75,7 @@ class NOT_Node(LogicNodeBase):
     title = 'not'
 
     def apply_op(self, elements: list):
-        return all([not bool(e) for e in elements])
+        return all(not bool(e) for e in elements)
 
 
 class AND_Node(LogicNodeBase):

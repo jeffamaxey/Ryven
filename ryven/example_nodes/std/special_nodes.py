@@ -89,11 +89,11 @@ class Checkpoint_Node(NodeBase):
 
     def clear_ports(self):
         # remove all outputs
-        for i in range(len(self.outputs)):
+        for _ in range(len(self.outputs)):
             self.delete_output(0)
 
         # remove all inputs
-        for i in range(len(self.inputs)):
+        for _ in range(len(self.inputs)):
             self.delete_input(0)
 
     def make_active(self):
@@ -312,7 +312,7 @@ class Clock_Node(NodeBase):
             self.timer.start()
         else:
             import time
-            for i in range(self.input(1)):
+            for _ in range(self.input(1)):
                 self.exec_output(0)
                 time.sleep(self.input(0))
 
@@ -688,12 +688,7 @@ class LinkIN_Node(NodeBase):
         }
 
     def set_state(self, data: dict, version):
-        if data['ID'] in self.INSTANCES:
-            # this happens when some existing node has been copied and pasted.
-            # we only want to rebuild links when loading a project, considering
-            # new links when copying nodes might get quite complex
-            pass
-        else:
+        if data['ID'] not in self.INSTANCES:
             del self.INSTANCES[str(self.ID)]     # remove old ref
             self.ID = uuid.UUID(data['ID'])      # use original ID
             self.INSTANCES[str(self.ID)] = self  # set new ref
@@ -776,11 +771,11 @@ class LinkOUT_Node(NodeBase):
         i = len(self.linked_node.inputs)
 
         # remove outputs if there are too many
-        for j in range(i, o):
+        for _ in range(i, o):
             self.delete_output(0)
 
         # add outputs if there are too few
-        for j in range(o, i):
+        for _ in range(o, i):
             self.create_output()
 
         self.update()
@@ -810,7 +805,7 @@ class LinkOUT_Node(NodeBase):
             }
 
     def set_state(self, data: dict, version):
-        if len(data) > 0:
+        if data:
             n: LinkIN_Node = LinkIN_Node.INSTANCES.get(data['linked ID'])
             if n is None:
                 # means that the OUT node gets initialized before it's link IN

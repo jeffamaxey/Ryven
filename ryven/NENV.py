@@ -30,10 +30,6 @@ def init_node_env():
         from ryven.main.nodes.NodeBase import NodeBase as Node_
 
         Node = Node_
-        NodeInputBP = NodeInputBP_
-        NodeOutputBP = NodeOutputBP_
-        dtypes = dtypes_
-
     else:
 
         # import sources directly from backend if not running in gui mode
@@ -43,6 +39,8 @@ def init_node_env():
             NodeOutputBP as NodeOutputBP_, \
             dtypes as dtypes_
 
+
+
         class NodeWrp(_Node):
             """
             Wraps the nodes s.t. their usages of ryvencore-qt or Ryven features don't brake them.
@@ -50,13 +48,16 @@ def init_node_env():
             """
 
             def __init__(self, params):
-                self.actions = dict()
+                self.actions = {}
                 super().__init__(params)
 
+
         Node = NodeWrp
-        NodeInputBP = NodeInputBP_
-        NodeOutputBP = NodeOutputBP_
-        dtypes = dtypes_
+
+    dtypes = dtypes_
+
+    NodeOutputBP = NodeOutputBP_
+    NodeInputBP = NodeInputBP_
 
 
 from ryven.main.utils import load_from_file
@@ -82,17 +83,16 @@ def import_widgets(origin_file: str, rel_file_path='widgets.py'):
 
         # in GUI mode, import the widgets container from NWENV containing all the exported widget classes
         from ryven import NWENV
-        widgets_container = NWENV.WidgetsRegistry.exported_widgets[-1]
+        return NWENV.WidgetsRegistry.exported_widgets[-1]
 
     else:
         # in non-gui mode, return an object that just returns None for all accessed attributes
         # so widgets.MyWidget in the nodes file just returns None then
+
         class PlaceholderWidgetsContainer:
             def __getattr__(self, item):
                 return None
-        widgets_container = PlaceholderWidgetsContainer()
-
-    return widgets_container
+        return PlaceholderWidgetsContainer()
 
 # ------------------------------------------------------
 
@@ -112,14 +112,13 @@ def export_nodes(*args):
     Exports/exposes the specified nodes to Ryven for use in flows.
     """
 
-    if not isinstance(args, tuple):
-        if issubclass(args, Node):
-            nodes = tuple(args)
-        else:
-            return
-    else:
+    if isinstance(args, tuple):
         nodes = list(args)
 
+    elif issubclass(args, Node):
+        nodes = tuple(args)
+    else:
+        return
     NodesRegistry.exported_nodes.append(nodes)
 
     # get sources

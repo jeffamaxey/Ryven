@@ -112,15 +112,14 @@ class StartupDialog(QDialog):
         import json
 
         file_name = \
-            QFileDialog.getOpenFileName(
+                QFileDialog.getOpenFileName(
                 self, 'select project file',
                 base_dir, 'JSON (*.json)'
             )[0]
 
         try:
-            f = open(file_name)
-            project_str = f.read()
-            f.close()
+            with open(file_name) as f:
+                project_str = f.read()
         except FileNotFoundError:
             # TODO: do something useful here
             return
@@ -141,7 +140,7 @@ class StartupDialog(QDialog):
 
         node_packages = valid_node_packages.copy()
 
-        if len(missing_node_package_names) > 0:
+        if missing_node_package_names:
             select_packages_dialog = SelectPackages_Dialog(self, required_packages=missing_node_package_names)
             select_packages_dialog.exec_()
             node_packages += select_packages_dialog.packages

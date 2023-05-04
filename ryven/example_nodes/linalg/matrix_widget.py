@@ -54,23 +54,6 @@ QTextEdit{
             matrix = np.around(m, 4)
         except Exception:
             matrix = m
-            # non computable matrix (expression matrix)
-
-            # if matrix.ndim == 1:
-            #     longest_exp_length = self.get_row_lxl(matrix)
-            #     lines.append(self.format_row_to_str(matrix, longest_exp_length))
-            # elif matrix.ndim == 2:
-            #     for row in matrix:
-            #         nlxl = self.get_row_lxl(row)
-            #         if nlxl > longest_exp_length:
-            #             longest_exp_length = nlxl
-            #     for row in matrix:
-            #         lines.append(self.format_row_to_str(row, longest_exp_length))
-            #
-            # self.setText('\n'.join(lines))
-            # return
-            pass
-
         if matrix.ndim == 0:    # can happen with scalars
             lines = [str(m)]
 
@@ -85,10 +68,7 @@ QTextEdit{
                 if nlxl > longest_exp_length:
                     longest_exp_length = nlxl
 
-            for row in matrix:
-                lines.append(self.format_row_to_str(row, longest_exp_length))
-
-
+            lines.extend(self.format_row_to_str(row, longest_exp_length) for row in matrix)
         s = '\n'.join(lines)
         self.setText(s)
         self.resize_to_content(lines)
@@ -99,9 +79,8 @@ QTextEdit{
             if type(exp) == str:
                 if len(exp) > longest_exp_length:
                     longest_exp_length = len(exp)
-            else:
-                if len(str(exp)) > longest_exp_length:  # round(number, 4)
-                    longest_exp_length = len(str(exp))
+            elif len(str(exp)) > longest_exp_length:  # round(number, 4)
+                longest_exp_length = len(str(exp))
         return longest_exp_length
 
     def format_row_to_str(self, row, lxl):
@@ -115,7 +94,7 @@ QTextEdit{
 
         # resize properly
         fm = QFontMetrics(self.font())
-        text_width = fm.width(lines[0]+'__')
+        text_width = fm.width(f'{lines[0]}__')
         text_width = text_width+20  # some buffer
         text_height = fm.height()*(len(lines))+12  # also some vertical buffer
         self.setFixedWidth(text_width if text_width > self.base_width else self.base_width)
@@ -144,10 +123,7 @@ QTextEdit{
 
 
     def get_state(self):
-        data = {'text': self.toPlainText(),
-                'shown': self.hidden_size is None
-                }
-        return data
+        return {'text': self.toPlainText(), 'shown': self.hidden_size is None}
 
     def set_state(self, data):
         self.setText(data['text'])

@@ -44,8 +44,7 @@ class ValNode_MainWidget(MWB, QLineEdit):
         return val
 
     def get_state(self):
-        data = {'text': self.text()}
-        return data
+        return {'text': self.text()}
 
     def set_state(self, data):
         self.setText(data['text'])

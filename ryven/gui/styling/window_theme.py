@@ -78,17 +78,10 @@ def apply_stylesheet(style: str):
         d = QDir()
         d.setSearchPaths('icon', [icons_dir])
 
-    if style == 'dark':
-        window_theme = WindowTheme_Dark()
-    else:
-        window_theme = WindowTheme_Light()
-
-    f = open(template_file)
-
-    from jinja2 import Template
-    jinja_template = Template(f.read())
-
-    f.close()
+    window_theme = WindowTheme_Dark() if style == 'dark' else WindowTheme_Light()
+    with open(template_file) as f:
+        from jinja2 import Template
+        jinja_template = Template(f.read())
 
     app = QApplication.instance()
     app.setStyleSheet(jinja_template.render(window_theme.rules))
